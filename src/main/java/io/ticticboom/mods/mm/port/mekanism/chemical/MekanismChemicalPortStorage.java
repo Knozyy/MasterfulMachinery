@@ -32,6 +32,8 @@ public abstract class MekanismChemicalPortStorage<CHEMICAL extends Chemical<CHEM
     private final UUID uid = UUID.randomUUID();
 
     private boolean locked = false;
+    // Priority for outputs. Default 0. Range 0..10.
+    private int priority = 0;
     // chemical remembered while locked, null = tank not locked to a chemical yet
     @Nullable
     private CHEMICAL lockedType = null;
@@ -104,6 +106,7 @@ public abstract class MekanismChemicalPortStorage<CHEMICAL extends Chemical<CHEM
     @Override
     public CompoundTag save(CompoundTag tag) {
         tag.put("handler", chemicalTank.serializeNBT());
+        tag.putInt("Priority", this.priority);
         if (locked) {
             tag.putBoolean("Locked", true);
             ResourceLocation id = lockedType == null ? null : getChemicalRegistry().getKey(lockedType);
@@ -116,6 +119,11 @@ public abstract class MekanismChemicalPortStorage<CHEMICAL extends Chemical<CHEM
 
     @Override
     public void load(CompoundTag tag) {
+        if (tag.contains("Priority")) {
+            this.priority = Math.max(0, Math.min(10, tag.getInt("Priority")));
+        } else {
+            this.priority = 0;
+        }
         // restore the lock first so a stale locked type can't reject the saved contents
         locked = tag.getBoolean("Locked");
         lockedType = null;
@@ -148,6 +156,7 @@ public abstract class MekanismChemicalPortStorage<CHEMICAL extends Chemical<CHEM
         json.addProperty("amount", model.amount());
         var stack = debugStack(chemicalTank.getStack());
         json.add("stack", stack);
+        json.addProperty("priority", this.priority);
         return json;
     }
 
@@ -160,5 +169,15 @@ public abstract class MekanismChemicalPortStorage<CHEMICAL extends Chemical<CHEM
         long remainingToInsert = stack.getAmount() - leftInStack.getAmount();
         stack.setAmount(remainingToInsert);
         return stack;
+    }
+
+    @Override
+    public int getPriority() {
+        return this.priority;
+    }
+
+    @Override
+    public void setPriority(int priority) {
+        this.priority = Math.max(0, Math.min(10, priority));
     }
 }
