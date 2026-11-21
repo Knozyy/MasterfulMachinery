@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on "Keep a Changelog" and this project follows [Semantic Versioning](https://semver.org/).
 
+## [0.1.36.6] - 2026-11-21
+
+**Special Thanks:**
+- **Knozyy** – Structure Builder craft queue and one-click builds.
+
+### Added
+#### #101 – Structure Builder craft queue and one-click builds
+- **Craft queue**: when every crafting CPU that could take a craft is busy (one CPU, the tool's other crafts on it), the craft waits and starts once a CPU is free, calculated again then. Before, only the first missing item was crafted and the others failed with "no CPU". A network without CPUs, or with only too small ones, still reports the failure.
+- **One click**: a build that has to wait for crafts is anchored where it was clicked (the hologram stays) and starts on its own once every craft is done. It doesn't start after a failed craft, a removed anchor, or when the tool is no longer carried.
+
 ## [0.1.36.5] - 2026-11-17
 **Special Thanks:**
 
